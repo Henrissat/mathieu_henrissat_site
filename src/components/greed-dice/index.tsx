@@ -4,8 +4,10 @@ import { getRandomDiceRoll } from "../../utils/diceRoll6";
 function Greed() {
   const [dice, setDice] = useState<number[]>([]);
   console.log(dice)
+  console.log('dice',dice.length)
   const [savedDice, setSavedDice] = useState<number[]>([]);
   console.log(savedDice)
+  console.log('savedDice', savedDice.length)
 
   // Gestionnaire de clic pour sauvegarder un chiffre
   const handleSaveDice = (number: number) => {
@@ -19,25 +21,34 @@ function Greed() {
     }
   };
 
-  // Gestionnaire de clic pour ajouter 6 lancers de dé au tableau
-  const handleRollDice = () => {
-    const newDice = [];
-    for (let i = 0; i < 6; i++) {
-      newDice.push(getRandomDiceRoll());
-    }
-    setDice(newDice);
-  };
-
   // Gestionnaire de clic pour faire revenir un chiffre dans dice
   const handleReturnToDice = (number: number) => {
     setDice([...dice, number]);
     // Trouver et retirer le chiffre de savedNumbers
     const index = savedDice.indexOf(number);
     if (index !== -1) {
-      const newDice = [...savedDice];
-      newDice.splice(index, 1);
-      setSavedDice(newDice);
+      const newSaveDice = [...savedDice];
+      newSaveDice.splice(index, 1);
+      setSavedDice(newSaveDice);
     }
+  };
+
+  
+  // Gestionnaire de clic pour ajouter 6 lancers de dé au tableau
+  const handleRollDice = () => {
+      if(dice.length === 0) {
+        const newDice = [];
+        for (let i = 0; i < 6; i++) {
+          newDice.push(getRandomDiceRoll());
+        }
+        setDice(newDice);
+      }else {
+        const newDice = [...dice];
+        for (let i = 0; i < newDice.length ; i++) {
+          newDice[i] = getRandomDiceRoll();
+        }
+        setDice(newDice);
+      }
   };
 
   // Fonction pour calculer le score en utilisant les chiffres sauvegardés
