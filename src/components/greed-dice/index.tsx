@@ -1,69 +1,23 @@
 import { useState } from "react";
 import { getRandomDiceRoll } from "../../utils/diceRoll6";
 
-function score(dice : number[]) {
-  //initialisé valeur à 0
-  const counts = [0, 0, 0, 0, 0, 0];
-  //score à 0
-  let totalScore = 0;
-
-  //parcourir le tableau et voir les valeurs
-  for (const value of dice ) {
-    counts[value - 1]++;
-  }
-
-  //Algorithm de calcul
-  for (let i = 0; i < 6; i++) {
-    if (counts[i] === 3) {
-      if (i === 0) {
-        totalScore += 1000;
-      } else {
-        totalScore += (i + 1) * 100;
-      }
-      counts[i] -= 3;
-    }
-    if (i === 0) {
-      totalScore += counts[i] * 100;
-    } else if (i === 4) {
-      // Pour les 5, on a 50 points chacun
-      totalScore += counts[i] * 50;
-    }
-    // Ajouter les conditions pour les cas où il y a 4 dés pareils
-    if (counts[i] === 4) {
-      if (i === 0) {
-        totalScore += 2000;
-      } else {
-        totalScore += (i + 1) * 100 * 2; 
-      }
-      counts[i] -= 4;
-    }
-    // Ajouter les conditions pour les cas où il y a 5 dés pareils
-    if (counts[i] === 5) {
-      if (i === 0) {
-        totalScore += 4000;
-      } else {
-        totalScore += (i + 1) * 100 * 2 * 2; 
-      }
-      counts[i] -= 5;
-    }
-    // Ajouter les conditions pour les cas où il y a 6 dés pareils
-    if (counts[i] === 6) {
-      if (i === 0) {
-        totalScore += 8000;
-      } else {
-        totalScore += (i + 1) * 100 * 2 * 2 * 2; 
-      }
-      counts[i] -= 6;
-    }
-  }
-  return totalScore;
-}
-
 function Greed() {
-  const [dice, setDice] = useState<number[]>([])
+  const [dice, setDice] = useState<number[]>([]);
+  console.log(dice)
+  const [savedDice, setSavedDice] = useState<number[]>([]);
+  console.log(savedDice)
 
-  // Appeler la fonction score avec le tableau de dés
-  const result = score(dice);
+  // Gestionnaire de clic pour sauvegarder un chiffre
+  const handleSaveDice = (number: number) => {
+    setSavedDice([...savedDice, number]);
+    // Trouver et retirer la première occurrence du chiffre de dice
+    const index = dice.indexOf(number);
+    if (index !== -1) {
+      const newDice = [...dice];
+      newDice.splice(index, 1);
+      setDice(newDice);
+    }
+  };
 
   // Gestionnaire de clic pour ajouter 6 lancers de dé au tableau
   const handleRollDice = () => {
@@ -74,12 +28,80 @@ function Greed() {
     setDice(newDice);
   };
 
+  // Gestionnaire de clic pour faire revenir un chiffre dans dice
+  const handleReturnToDice = (number: number) => {
+    setDice([...dice, number]);
+    // Trouver et retirer le chiffre de savedNumbers
+    const index = savedDice.indexOf(number);
+    if (index !== -1) {
+      const newDice = [...savedDice];
+      newDice.splice(index, 1);
+      setSavedDice(newDice);
+    }
+  };
+
+  // Fonction pour calculer le score en utilisant les chiffres sauvegardés
+  const calculateFinalScore = (dice: number[]) => {
+  //initialiser un tableau pour compter les occurrences de chaque valeur de dé (1 à 6)
+  const counts = [0, 0, 0, 0, 0, 0];
+  //score de base
+  let totalScore = 0;
+  //parcourir le tableau et voir les valeurs
+  for (const value of dice) {
+    counts[value - 1]++;
+  }
+
+  //Faire l'algorithme de calcul
+  for (let i = 0; i < 6; i++) {
+    if (counts[i] >= 3) {
+      if (i === 0) {
+        totalScore += 1000;
+      } else {
+        totalScore += (i + 1) * 100; 
+      }
+      counts[i] -= 3;
+    }
+    if (i === 0) {
+      totalScore += counts[i] * 100;
+    } else if (i === 4) {
+      totalScore += counts[i] * 50;
+    }
+    if (counts[i] === 4) {
+      if (i === 0) {
+        totalScore += 2000; 
+      } else {
+        totalScore += (i + 1) * 200; 
+      }
+      counts[i] -= 4;
+      }
+    }
+    return totalScore;
+  };
+
+  // Calculer le score du lancer de dés
+  const result = calculateFinalScore(dice);
+
+  // Calculer le Score final en utilisant les chiffres sauvegardés
+  const finalScore = calculateFinalScore(savedDice);
+
 
   return (
     <div>
       <button onClick={handleRollDice}>Lancer les dés</button>
-      <div>Résultats des lancers de dé : {dice.join(', ')}</div>
+      <div>Résultats des lancers de dé :  {dice.map((number, index) => (
+          <button key={index} onClick={() => handleSaveDice(number)}>
+            {number}
+          </button>
+        ))}</div>
       <div>Votre score est de : {result}</div>
+      <div>Mes dés sauvegardés : {savedDice.map((number, index) => (
+          <button key={index} onClick={() => handleReturnToDice(number)}>
+            {number}
+          </button>
+        ))}</div>
+      <div>
+        Final Score : {finalScore}
+      </div>
       <div id="greedRules">
         <p>Aperçu des règles de cupidité :
 
