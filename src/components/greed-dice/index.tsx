@@ -3,11 +3,13 @@ import { getRandomDiceRoll } from "../../utils/diceRoll6";
 
 function Greed() {
   const [dice, setDice] = useState<number[]>([]);
-  console.log(dice)
-  console.log('dice',dice.length)
   const [savedDice, setSavedDice] = useState<number[]>([]);
-  console.log(savedDice)
-  console.log('savedDice', savedDice.length)
+  const [accumulatedScore, setAccumulatedScore] = useState<number>(0);
+  const [finalScore, setFinalScore] = useState<number>(0);
+  const [showSaveButton, setShowSaveButton] = useState<boolean>(false);
+  // const [gameStarted, setGameStarted] = useState<boolean>(false);
+  // console.log('gameStarted', gameStarted)
+
 
   // Gestionnaire de clic pour sauvegarder un chiffre
   const handleSaveDice = (number: number) => {
@@ -35,31 +37,58 @@ function Greed() {
 
   
   // Gestionnaire de clic pour ajouter 6 lancers de dé au tableau
-  const handleRollDice = () => {
+  const handleRollDice = async() => {
       if(dice.length === 0) {
         const newDice = [];
         for (let i = 0; i < 6; i++) {
           newDice.push(getRandomDiceRoll());
         }
+        // Attendre un court instant pour que le rendu se mette à jour
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        // Vérifier si c'est un Game Over
+        const result = calculateFinalScore(newDice);
+        // Game Over
+        if (result === 0) {
+          alert("Game Over! You didn't score any points.");
+          setShowSaveButton(false); 
+          setDice([])
+          setSavedDice([])
+        } 
         setDice(newDice);
+        setShowSaveButton(true);
       }else {
         const newDice = [...dice];
         for (let i = 0; i < newDice.length ; i++) {
           newDice[i] = getRandomDiceRoll();
         }
+        // Attendre un court instant pour que le rendu se mette à jour
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        // Vérifier si c'est un Game Over
+        const result = calculateFinalScore(newDice);
+        console.log('result', result)
+        if (result === 0) {
+          // Game Over
+          alert("Game Over! You didn't score any points.");
+          setShowSaveButton(false); // Masquer le bouton de sauvegarde
+          setDice([])
+          setSavedDice([])
+        } 
         setDice(newDice);
       }
+
   };
 
   // Fonction pour calculer le score en utilisant les chiffres sauvegardés
   const calculateFinalScore = (dice: number[]) => {
-  //initialiser un tableau pour compter les occurrences de chaque valeur de dé (1 à 6)
-  const counts = [0, 0, 0, 0, 0, 0];
-  //score de base
-  let totalScore = 0;
-  //parcourir le tableau et voir les valeurs
-  for (const value of dice) {
-    counts[value - 1]++;
+    //initialiser un tableau pour compter les occurrences de chaque valeur de dé (1 à 6)
+    const counts = [0, 0, 0, 0, 0, 0];
+    //score de base
+    let totalScore = 0;
+    //parcourir le tableau et voir les valeurs
+    for (const value of dice) {
+      counts[value - 1]++;
   }
 
   //Faire l'algorithme de calcul
@@ -93,8 +122,12 @@ function Greed() {
   const result = calculateFinalScore(dice);
 
   // Calculer le Score final en utilisant les chiffres sauvegardés
-  const finalScore = calculateFinalScore(savedDice);
-
+  const handleSaveScore = () => {
+    const calculatedFinalScore = calculateFinalScore(savedDice);
+    setAccumulatedScore((prevAccumulatedScore) => prevAccumulatedScore + calculatedFinalScore);
+    setFinalScore((prevFinalScore) => prevFinalScore + calculatedFinalScore);
+    setSavedDice([]);
+  };
 
   return (
     <div>
@@ -109,41 +142,45 @@ function Greed() {
           <button key={index} onClick={() => handleReturnToDice(number)}>
             {number}
           </button>
-        ))}</div>
+        ))}
+        {showSaveButton && (
+        <button onClick={handleSaveScore}>Sauvegarder mon score</button>
+        )}
+      </div>
+      <button>Suivant</button>
+      <br/>
       <div>
         Final Score : {finalScore}
       </div>
       <div id="greedRules">
-        <p>Aperçu des règles de cupidité :
-
-La cupidité, également connue sous le nom de 10 000, est un jeu de dés dans lequel chaque joueur s'affronte pour être le premier à atteindre 10 000 points. Prenez des risques, repoussez les limites et soyez gourmand dans ce jeu conçu pour deux joueurs ou plus. Tout ce dont vous avez besoin, ce sont six dés et un bloc de scores pour jouer. Vous trouverez ci-dessous les règles complètes de la cupidité.
-
-
-Démarrage du jeu :
-
-Pour démarrer la partie, vous avez besoin de deux joueurs (minimum) et de six dés à six faces. Demandez à tous les joueurs de lancer un dé pour déterminer qui commence. Le jet élevé commence le jeu et le jeu se poursuit dans le sens des aiguilles d'une montre.
-
-Le jeu commence lorsque le premier joueur lance les six dés et tente d’obtenir un score de 500 ou plus lors de son lancer initial pour « entrer » dans la partie. Si un score de 500 ou plus n’est pas atteint pendant le tour du joueur, il ne marque aucun point pour ce tour. Une fois qu'un joueur a marqué son « entrée » initiale de 500 points, il ajoute tous les points accumulés lors des tours suivants à son score, même s'il marque moins de 500 points dans un tour.
-
-Si un joueur ne obtient pas de combinaison de points à son tour, son tour est terminé et le jeu continue dans le sens des aiguilles d'une montre. Si un joueur obtient une combinaison de points, il peut choisir de prendre ce score et de l'ajouter à son total cumulé, ou il peut devenir gourmand et relancer pour tenter d'obtenir un score plus élevé.
-
-    Les joueurs peuvent choisir de relancer les six dés, perdant ainsi leur score initial dans l’espoir d’en marquer un plus élevé.
-    Les joueurs peuvent choisir de conserver certains dés déjà en position de score pour tenter d'obtenir un score plus élevé avec les dés restants. Cependant, si un score plus élevé n’est pas obtenu avec la relance, le joueur marque 0 pour le tour.
-
-Règles de notation de la cupidité :
-
-    1=100 points
-    5=50 points
-    Brelan = 100 x le nombre sur le dé (100 points pour trois 1, 500 points pour trois 5, etc.)
-    4 exemplaires = 1000 points
-    trois paires (ne peuvent être obtenues que sur un seul lancer) = 1500 points.
-    Une suite avec les six dés (ne peut être obtenue que sur un seul lancer) = 2000 points.
-    5 exemplaires = 2000 points.
-    6 exemplaires = 3000 points.
-
-Règles gagnantes pour la cupidité :
-
-Le jeu se termine lorsque le premier joueur atteint 10 000 points ou plus. Alternativement, vous pouvez accorder à tous les autres joueurs un tour supplémentaire une fois que 10 000 points ont été atteints pour tenter de battre le score.</p>
+        <p>
+            But du jeu :
+            Atteindre un score de 10 000 points.
+            Déroulement du jeu :
+            Les joueurs jouent les un après les autres.
+            Description d'un tour de jeu :
+            Jeter les 5 dés.
+            Mettre de côté le ou les dés permettant de gagner des points.
+            Si on le souhaite arrêter, laisser la main au joueur suivant et additionner le score obtenu lors du tour aux points déjà acquis lors des autres tours.
+            Ou si on préfère lancer les dés non utilisés dans l'espoir de faire grimper le score obtenu lors du tour.
+            Si un des jets de dés ne rapporte rien, le score du tour du jeu est nul, et c'est au joueur suivant de lancer les 5 dés.
+            Comptage des points :
+            Un As : 100 pts
+            Un 5 : 50 pts
+            Brelan d'As : 1000 pts
+            Brelan de 5 : 500 pts
+            Brelan de 2,3,4,6 : 200, 300, 400,600 pts
+            Suite : 1,2,3,4,5 ou 2,3,4,5,6 : 1500 pts
+            Remarque 1 : Pour être valides, les brelans ou suites doivent être produits sur un seul jeté de dé.
+            Ex :
+            on obtient 1, 3, 4, 4, 6 au premier lancé
+            seul le 1 permet d'augmenter le score du tour (+100 pts). On le garde et on relance les autres dés.
+            On obtient 5, 3, 3, 4
+            seul le 5 permet d'augmenter le score du tour (+50 pts, soit 150 en tout). On le garde et on relance les autres dés.
+            On obtient 2, 3, 4 : rien ne permet de marquer avec ces 3 dés (même si les 5 dés constituent une suite), les 150 points sont perdus.
+            Remarque 2 : Lorsque les 5 dés ont permis de marquer, ils peuvent être tous relancés en vue d'améliorer le score du tour (au risque de le perdre entièrement).
+            Remarque 3 : Il faut totaliser 1000 points avant de pouvoir commencer à comptabiliser ses points
+      </p>
     </div>
     </div>
   );
