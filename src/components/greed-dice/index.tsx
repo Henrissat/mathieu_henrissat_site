@@ -37,40 +37,38 @@ function Greed() {
 
   
   // Gestionnaire de clic pour ajouter 6 lancers de dé au tableau
-  const handleRollDice = async() => {
+  const handleRollDice = () => {
       if(dice.length === 0) {
         const newDice = [];
         for (let i = 0; i < 6; i++) {
           newDice.push(getRandomDiceRoll());
         }
-        // Attendre un court instant pour que le rendu se mette à jour
-        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        // Mettre à jour les dés
+        setDice(newDice);
 
         // Vérifier si c'est un Game Over
         const result = calculateFinalScore(newDice);
         // Game Over
         if (result === 0) {
-          alert("Game Over! You didn't score any points.");
+          alert("Game Over!");
           setShowSaveButton(false); 
           setDice([])
           setSavedDice([])
         } 
-        setDice(newDice);
         setShowSaveButton(true);
       }else {
         const newDice = [...dice];
         for (let i = 0; i < newDice.length ; i++) {
           newDice[i] = getRandomDiceRoll();
         }
-        // Attendre un court instant pour que le rendu se mette à jour
-        await new Promise((resolve) => setTimeout(resolve, 0));
 
         // Vérifier si c'est un Game Over
         const result = calculateFinalScore(newDice);
         console.log('result', result)
         if (result === 0) {
           // Game Over
-          alert("Game Over! You didn't score any points.");
+          alert("Game Over! Dommage vous y étiez presque");
           setShowSaveButton(false); // Masquer le bouton de sauvegarde
           setDice([])
           setSavedDice([])
@@ -149,7 +147,7 @@ function Greed() {
       </div>
       <button>Suivant</button>
       <br/>
-      <div>
+      <div className="final-score">
         Final Score : {finalScore}
       </div>
       <div id="greedRules">
