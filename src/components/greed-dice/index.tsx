@@ -9,17 +9,15 @@ function Greed() {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
-  console.log('gameStarted', gameStarted)
 
-
-  const playerNames = ["Joueur 1", "Joueur 2", "Joueur 3", "Joueur 4"];
+  const [playerNames, setPlayerNames] = useState<string[]>(["Joueur 1", "Joueur 2", "Joueur 3", "Joueur 4"]);
 
   const initialPlayerScores = Array(numPlayers).fill(0);
   const [playerScores, setPlayerScores] = useState<number[]>(initialPlayerScores);
   const [activePlayerScore, setActivePlayerScore] = useState<number>(0);
 
   const checkWin = () => {
-    if(playerScores[activePlayerScore] >= 10000){
+    if(activePlayerScore >= 10000){
       setGameOver(true);
       window.alert(`${playerNames[currentPlayerIndex]} YOU WIN !`)
     }
@@ -35,17 +33,42 @@ function Greed() {
     setGameStarted(true); 
     setActivePlayerScore(0); 
     setGameOver(false); 
+
+    //Mise à jour nombre de joueurs et le score
+    const updatedPlayerNames = Array.from({ length: numPlayers }, (_, index) => `Joueur ${index + 1}`);
+    setPlayerNames(updatedPlayerNames);
+    const updatedPlayerScores = Array(numPlayers).fill(0);
+    setPlayerScores(updatedPlayerScores);
   };
 
   // Gestionnaire de clic pour passer au joueur suivant
   const handleNextPlayer = () => {
-    setCurrentPlayerIndex((prevIndex) => (prevIndex + 1) % numPlayers);
+    if (result === 0) {
+      setActivePlayerScore(0);
+    } else {
+      setPlayerScores((prevScores) => {
+        const newScores = [...prevScores];
+        newScores[currentPlayerIndex] += activePlayerScore;
+        return newScores;
+      });
+    }
+    
     setDice([]);
     setSavedDice([]);
+    setCurrentPlayerIndex((prevIndex) => (prevIndex + 1) % numPlayers);
     setShowSaveButton(false);
-    setActivePlayerScore(0); 
+    setActivePlayerScore(0);
     checkWin();
   };
+
+  const nextPlayer = () => {
+    setDice([]);
+    setSavedDice([]);
+    setCurrentPlayerIndex((prevIndex) => (prevIndex + 1) % numPlayers);
+    setShowSaveButton(false);
+    setActivePlayerScore(0);
+    checkWin();
+  }
 
   // Gestionnaire de clic pour sauvegarder un chiffre
   const handleSaveDice = (number: number) => {
@@ -73,6 +96,8 @@ function Greed() {
   
   // Gestionnaire de clic pour ajouter 6 lancers de dé au tableau
   const handleRollDice = () => {
+    let shouldResetDiceAndScore = false;
+
       if(dice.length === 0) {
         const newDice = [];
         for (let i = 0; i < 6; i++) {
@@ -86,12 +111,9 @@ function Greed() {
         const result = calculateFinalScore(newDice)
         // Game Over
         if (result === 0) {
-          alert("Dommage pas un seul bon dé")
-          setShowSaveButton(false)
-          setActivePlayerScore(0)
-          handleNextPlayer()
-          console.log(activePlayerScore)
-          return;
+          alert("Dommage, pas un seul bon dé")
+          setActivePlayerScore(0);
+          shouldResetDiceAndScore= true;
         } 
         setShowSaveButton(true);
 
@@ -107,15 +129,18 @@ function Greed() {
         if (result === 0) {
           // Game Over
           alert("Echec ! Dommage vous y étiez presque")
-          setShowSaveButton(false)
-          setActivePlayerScore(0)
-          handleNextPlayer()
-          return;
-        } else{
-          setDice(newDice)
+          setActivePlayerScore(0);
+          shouldResetDiceAndScore= true;
         }
-
+        setDice(newDice)
       }
+      
+    if (shouldResetDiceAndScore) {
+      setDice([]);
+      setSavedDice([]);
+      setShowSaveButton(false);
+      handleNextPlayer();
+    }
   };
 
   // Fonction pour calculer le score en utilisant les chiffres sauvegardés
@@ -131,42 +156,16 @@ function Greed() {
   for (let i = 0; i < 6; i++) {
     if (counts[i] >= 3) {
       if (i === 0) {
-        totalScore += 1000;
+        totalScore += 1000 * (counts[i] - 2);
       } else {
-        totalScore += (i + 1) * 100; 
+        totalScore += (i + 1) * 100 * (counts[i] - 2);
       }
       counts[i] -= 3;
-      }
-      else if (i === 0) {
-        totalScore += counts[i] * 100;
-      } else if (i === 4) {
-        totalScore += counts[i] * 50;
-      }
-      else if (counts[i] === 4) {
-        if (i === 0) {
-          totalScore += 2000; 
-        } else {
-          totalScore += (i + 1) * 100 * 2; 
-        }
-        counts[i] -= 4;
-      }
-      else if (counts[i] === 5) {
-        if (i === 0) {
-          totalScore += 4000; 
-        } else {
-          totalScore += (i + 1) * 100 * 2 * 2; 
-        }
-        counts[i] -= 5;
-      }
-      else if (counts[i] === 6) {
-        if (i === 0) {
-          totalScore += 8000; 
-        } else {
-          totalScore += (i + 1) * 100 * 2 * 2 * 2; 
-        }
-        counts[i] -= 6;
-      }
     }
+  }
+
+  // Ajouter le score pour les 1 et les 5 restants
+  totalScore += counts[0] * 100 + counts[4] * 50;
     return totalScore;
   };
 
@@ -176,14 +175,14 @@ function Greed() {
   // Fonction pour sauvegarder le score du joueur actif
   const handleSaveScore = () => {
     const calculatedFinalScore = calculateFinalScore(savedDice);
-    setPlayerScores((prevScores) => {
-      const newScores = [...prevScores];
-      newScores[currentPlayerIndex] += calculatedFinalScore;
-      return newScores;
-    });
-    setActivePlayerScore((prevScore) => prevScore + calculatedFinalScore);
     setSavedDice([]);
+    
+    const scoreToAddLater = activePlayerScore + calculatedFinalScore;
+    setActivePlayerScore(scoreToAddLater);
   };
+
+  console.log('playerScores',playerScores)
+  console.log('activePlayerScore',activePlayerScore)
 
   return (
     <div>
