@@ -1,0 +1,158 @@
+
+.game{
+  width: 100%;
+  height: 768px;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  background-color: #110c1b;
+}
+
+.container-panel {
+  min-width: 368px;
+  background-image: url("../../../public/bg_panel.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;   
+}
+
+.container-game {
+  position: relative;
+  background-image: url('../../../public/plateau_gauche.png'), url('../../../public/plateau_droite.png'), url('../../../public/plateau_centre.png');
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-position: left, right, center;
+  background-size: auto, auto, auto; 
+  max-width: 1300px;
+  min-width: 700px;
+}
+
+.score-activ-player{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  background-image: url('../../../public/activ_player.png');
+  width: 321px;
+  height: 102px;
+  left: 37%;
+  bottom: 0;
+}
+
+.text-activ-player-score{
+  text-align: center;
+}
+
+#wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 610px;
+}
+
+$dieSize: 100px;
+
+.die {
+  display: inline-block;
+  margin: 50px;
+  position: relative;
+  height: $dieSize;
+  width: $dieSize;
+  perspective: $dieSize * 100;
+  &-inner {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    transform: translateZ($dieSize/-2) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+    &[data-roll='1'] {
+      transform: translateZ($dieSize/-2) rotateX(45deg) rotateY(0deg) rotateZ(-45deg);
+    }
+    &[data-roll='2'] {
+      transform: translateZ($dieSize/-2) rotateX(-45deg) rotateY(45deg) rotateZ(0deg);
+    }
+    &[data-roll='3'] {
+      transform: translateZ($dieSize/-2) rotateX(-45deg) rotateY(-45deg) rotateZ(90deg);
+    }
+    &[data-roll='4'] {
+      transform: translateZ($dieSize/-2) rotateX(-45deg) rotateY(-45deg) rotateZ(-90deg);
+    }
+    &[data-roll='5'] {
+      transform: translateZ($dieSize/-2) rotateX(135deg) rotateY(-45deg) rotateZ(0deg);
+    }
+    &[data-roll='6'] {
+      transform: translateZ($dieSize/-2) rotateX(45deg) rotateY(180deg) rotateZ(-45deg);
+    }
+  }
+  &-side {
+    background-color: #eee;
+    border: 1px solid #ddd;
+    box-shadow: inset 10px -10px 40px -10px #ccc, inset -10px 10px 40px -10px #ccc, inset -5px 5px 20px 10px #fff, inset 5px -5px 20px 10px #fff;
+    box-sizing: border-box;
+    display: block;
+    margin: 0;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    &:after {
+      background: none transparent;
+      border-radius: 100%;
+      content: '';
+      display: block;
+      height: $dieSize/12;
+      width: $dieSize/12;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    &:nth-child(1) {
+      transform: rotateY(0deg) translateZ($dieSize/2);
+      &:after {
+        background-color: #222;
+        box-shadow: 0 0 0 5px #222;
+      }
+    }
+    &:nth-child(2) {
+      transform: rotateX(180deg) translateZ($dieSize/2);
+      &:after {
+        box-shadow: -25px -20px 0 5px #222, 25px -20px 0 5px #222, 0 -20px 0 5px #222, -25px 20px 0 5px #222, 25px -20px 0 5px #222, 25px 20px 0 5px #222, 0 20px 0 5px #222;
+      }
+    }
+    &:nth-child(3) {
+      transform: rotateY(90deg) translateZ($dieSize/2);
+      &:after {
+        box-shadow: -20px -20px 0 5px #222, 20px 20px 0 5px #222, 20px -20px 0 5px #222, -20px 20px 0 5px #222;
+      }
+    }
+    &:nth-child(4) {
+      transform: rotateY(-90deg) translateZ($dieSize/2);
+      &:after {
+        background-color: #222;
+        box-shadow: -20px -20px 0 5px, 0 0 0 5px, 20px 20px 0 5px #222;
+      }
+    }
+    &:nth-child(5) {
+      transform: rotateX(90deg) translateZ($dieSize/2);
+      &:after {
+        box-shadow: -20px -20px 0 5px #222, 20px 20px 0 5px #222;
+      }
+    }
+    &:nth-child(6) {
+      transform: rotateX(-90deg) translateZ($dieSize/2);
+      &:after {
+        background-color: #222;
+        box-shadow: -22px -22px 0 5px #222, 22px 22px 0 5px #222, 22px -22px 0 5px #222, -22px 22px 0 5px #222, 0 0 0 5px #222;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .die {
+    display: none;
+    &:first-child {
+      display: block;
+      margin: 0 auto;
+    }
+  }
+}
