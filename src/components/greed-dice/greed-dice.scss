@@ -5,13 +5,74 @@
   display: grid;
   grid-template-columns: 1fr 3fr;
   background-color: #110c1b;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
 }
 
 .container-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   min-width: 368px;
+  align-items: center;
   background-image: url("../../../public/bg_panel.jpg");
   background-size: cover;
-  background-repeat: no-repeat;   
+  background-repeat: no-repeat;  
+}
+
+.save-score {
+  margin-top: 20px;
+  text-align: center;
+  color: white;
+}
+
+.final-score {
+  position: absolute;
+  background-image: url('../../../public/btn-next-player-off.png');
+  width: 230px;
+  height: 54px;
+  left: 26%;
+  bottom: 20px;
+}
+
+.final-score span{
+  position: relative;
+  margin-left: 30%;
+  bottom: -12px;
+}
+
+.dice-panel{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.inner-div-panel{
+  display: flex;
+  width: 80px;
+  flex-direction: column;
+  padding: 2rem 0 0 2rem;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.roll-dice-panel{
+  margin: 14px 0;
+}
+
+.btn-save-dice{
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 43px;
+  left: 35%;
+}
+
+.screen-dice{
+  position: relative;
+  width: 326px;
+  height: 500px;
+  margin: 0 auto;
+  background-image: url('../../../public/panel.png');
+  margin-top: 30px;
 }
 
 .container-game {
@@ -26,23 +87,127 @@
 
 .score-activ-player{
   display: flex;
-  justify-content: center;
   align-items: center;
   position: absolute;
   background-image: url('../../../public/activ_player.png');
-  width: 321px;
-  height: 102px;
-  left: 37%;
-  bottom: 0;
+  width: 298px;
+  height: 59px;
+  left: 39%;
+  margin-top: 15px;
+  top: 0;
 }
 
 .text-activ-player-score{
-  text-align: center;
+  padding-left: 4rem;
+  padding-top: 5px;
+}
+
+.btn-end-turn{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  background-image: url('../../../public/btn-next-player-on.png');
+  width: 230px;
+  height: 54px;
+  left: 60%;
+  bottom: 20px;
+  padding-bottom: 11px;
+  background-color: transparent;
+  border: none; 
+  cursor: pointer;
+  color: white;
+  transition: background-image 0.5s ease;
+}
+
+.btn-end-turn:hover {
+  background-image: url('../../../public/btn-next-player-off.png');
+  color: #005e8d;
+}
+
+.player-panel{
+  position: absolute;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 3px;
+  bottom: 30px;
+}
+
+.players-screen{
+  position: relative;
+  width: 92px;
+  height: 130px;
+  background-size: cover; 
+}
+
+.empty-avatar{
+  position: relative;
+  width: 92px;
+  height: 130px;
+  background-size: cover; 
+  background-image: url('../../../public/player_avatar-undefined.png');
+}
+
+.score-final-players{
+  position: absolute;
+  display: flex;
+  width: 88px;
+  height: 51px;
+  top:-20px;
+  background-image: url('../../../public/player_score.png');
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.player-number{
+  position: absolute;
+  display: flex;
+  width: 51px;
+  height: 43px;
+  bottom: -15px;
+  right: 0;
+  background-image: url('../../../public/player_number.png');
+  justify-content: center;
+  align-items: center;
+  padding-left: 5px;
+  font-weight: 900;
+}
+
+.btn-roll-dice{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  background-image: url('../../../public/roll-dice-on.png');
+  width: 340px;
+  height: 120px;
+  left: 37%;
+  bottom: 0;
+  background-color: transparent;
+  border: none; 
+  cursor: pointer;
+  font-size: 1.3rem;
+  font-weight: 900;
+  transition: background-image 0.5s ease-in-out;
+  color: white;
+}
+.btn-roll-dice:hover {
+  background-image: url('../../../public/roll-dice.png');
+  color: #07233d;
+}
+
+.bg-light{
+  width: 100%;
+  height: 100%;
+  background-image: url('../../../public/lueur.png') ;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 #wrap {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 610px;
@@ -57,6 +222,9 @@ $dieSize: 100px;
   height: $dieSize;
   width: $dieSize;
   perspective: $dieSize * 100;
+  background-color: transparent;
+  border: none; 
+  cursor: pointer;
   &-inner {
     height: 100%;
     width: 100%;

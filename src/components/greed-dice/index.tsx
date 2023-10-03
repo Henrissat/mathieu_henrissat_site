@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { getRandomDiceRoll } from "../../utils/diceRoll6";
 import "./greed-dice.scss"
+import avatar1 from '../../../public/player_avatar-1.png';
+import avatar2 from '../../../public/player_avatar-2.png';
+import avatar3 from '../../../public/player_avatar-3.png';
+import avatar4 from '../../../public/player_avatar-4.png';
 
 function Greed() {
   const [dice, setDice] = useState<number[]>([])
@@ -27,6 +31,7 @@ function Greed() {
     }
   }
 
+  console.log("numPlayers", numPlayers)
   // Gestionnaire de clic pour commencer la partie avec le nombre de joueurs choisi
   const handleStartGame = () => {
     setDice([]);
@@ -38,7 +43,7 @@ function Greed() {
     setGameOver(false); 
 
     //Mise à jour nombre de joueurs et le score
-    const updatedPlayerNames = Array.from({ length: numPlayers }, (_, index) => `Joueur ${index + 1}`);
+    const updatedPlayerNames = Array.from({ length: numPlayers }, (_, index) => `${index + 1}`);
     setPlayerNames(updatedPlayerNames);
     const updatedPlayerScores = Array(numPlayers).fill(0);
     setPlayerScores(updatedPlayerScores);
@@ -269,43 +274,56 @@ function Greed() {
       {gameStarted && (
         <div className="game">
           <div className="container-panel">
-            <div></div>
-            <div className="">
-              {playerNames[currentPlayerIndex]} (Actif)
-              <div className="">Score : {playerScores[currentPlayerIndex]} </div>
-            </div>
-            <div>
-              <button className="" onClick={handleRollDice}>Lancer les dés</button>
-              <div className="">Résultats des lancers de dé :  {dice.map((number, index) => (
-                  <button key={index} className="" onClick={() => handleSaveDice(number)} >
-                    {number}
-                  </button>
-                ))}
+            <div className="screen-dice">
+              <div className="save-score">{activePlayerScore}</div>
+              <div className="dice-panel">
+                <div className="inner-div-panel">{dice.map((number, index) => (
+                    <button key={index} className="roll-dice-panel" onClick={() => handleSaveDice(number)} >
+                      {number}
+                    </button>
+                  ))}
+                </div>
+                <div className="inner-div-panel">{savedDice.map((number, index) => (
+                    <button key={index} className="roll-dice-panel" onClick={() => handleReturnToDice(number)}>
+                      {number}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="">Votre score est de : {result}</div>
-              <div className="">Mes dés sauvegardés : {savedDice.map((number, index) => (
-                  <button key={index} onClick={() => handleReturnToDice(number)}>
-                    {number}
-                  </button>
-                ))}
-                {showSaveButton && (
-                <button onClick={handleSaveScore}>Mettre de côté</button>
+              {showSaveButton && (
+                <button onClick={handleSaveScore} className="btn-save-dice">Mettre de côté</button>
                 )}
-              </div>
-              <div className="final-score">
-                Final Score : {activePlayerScore}
-              </div>
             </div>
-            <button className="" onClick={handleNextPlayer} >Finir mon tour</button>
+            <div className="player-panel">
+              {[...Array(4)].map((_, index) => (
+                <div key={index} className="players-screen">
+                  {playerNames[index] ? (
+                    <>
+                    <div
+                      className="players-screen"
+                      style={{
+                        backgroundImage: `url(${process.env.PUBLIC_URL}/player_avatar-${index}.png)`
+                      }}
+                    ></div>
+                    <div className="score-final-players">{playerScores[index]}</div>
+                    <div className="player-number">{playerNames[index]}</div>
+                    </>
+                  ) : (
+                    <div className="empty-avatar">
+                      <div className="score-final-players"></div>
+                      <div className="player-number"></div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
           <div className="container-game">
+            <div className="bg-light"></div>
             <div id="wrap">
-              {dice.map((result, index) => (
-                <div className="die" key={index}>
-                  <div
-                    className="die-inner"
-                    data-roll={result}
-                  >
+              {dice.map((number, index ) => (
+                <button className="die" key={index} onClick={() => handleSaveDice(number)}>
+                  <div className="die-inner" data-roll={number}>
                     <div className="die-side"></div>
                     <div className="die-side"></div>
                     <div className="die-side"></div>
@@ -313,23 +331,17 @@ function Greed() {
                     <div className="die-side"></div>
                     <div className="die-side"></div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
             <div className="score-activ-player">            
               <div className="text-activ-player-score">
-                {playerNames.map((playerName, index) => {
-                  if (index !== currentPlayerIndex) {
-                    return (
-                      <div key={index}>
-                        {playerName} : {playerScores[index]}
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
+              Joueur {playerNames[currentPlayerIndex]} | Score : {playerScores[currentPlayerIndex]}
               </div>
             </div>
+            <div className="final-score"><span>{result}</span></div>
+            <button className="btn-end-turn" onClick={handleNextPlayer} >Finir mon tour</button>
+            <button className="btn-roll-dice" onClick={handleRollDice}>Lancer les dés</button>
           </div>
         </div>
       )}
