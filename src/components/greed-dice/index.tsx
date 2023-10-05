@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { getRandomDiceRoll } from "../../utils/diceRoll6";
-import "./greed-dice.scss"
+import "./greedDice.scss";
+import LoadingGreed from "./loaderGreed";
+
 
 function Greed() {
   const [dice, setDice] = useState<number[]>([])
@@ -18,7 +20,6 @@ function Greed() {
   const [activePlayerScore, setActivePlayerScore] = useState<number>(0)
   const [firstTurn, setFirstTurn] = useState<boolean>(true)
   const [hasSavedDiceThisTurn, setHasSavedDiceThisTurn] = useState<boolean>(false)
-
 
   const checkWin = () => {
     if(activePlayerScore >= 10000){
@@ -252,10 +253,6 @@ function Greed() {
     setActivePlayerScore(scoreToAddLater);
   };
 
-  console.log('hasSavedDiceThisTurn',hasSavedDiceThisTurn)
-  console.log('playerScores',playerScores)
-  console.log('activePlayerScore',activePlayerScore)
-
   return (
     <div>
       {!gameStarted && (
@@ -269,92 +266,111 @@ function Greed() {
           <button onClick={handleStartGame}>Commencer à jouer</button>
         </div>
       )}
-
       {gameStarted && (
-        <div className="game">
-          <div className="container-panel">
-            <div className="screen-dice">
-              <div className="save-score">{activePlayerScore}</div>
-              <div className="dice-panel">
-                <div className="inner-div-panel">{dice.map((number, index) => (
-                    <button key={index} className="roll-dice-panel" onClick={() => handleSaveDice(number)} >
-                      {number}
-                    </button>
-                  ))}
-                </div>
-                <div className="inner-div-panel">{savedDice.map((number, index) => (
-                    <button key={index} className="roll-dice-panel" onClick={() => handleReturnToDice(number)}>
-                      {number}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="final-score">{result}</div>
-            </div>
-            <div className="player-panel">
-              {[...Array(4)].map((_, index) => (
-                <div key={index} className="players-screen">
-                  {playerNames[index] ? (
-                    <>
-                    <div
-                      className="players-screen"
-                      style={{
-                        backgroundImage: `url(${process.env.PUBLIC_URL}/player_avatar-${index}.png)`
-                      }}
-                    ></div>
-                    <div className="score-final-players">{playerScores[index]}</div>
-                    <div className="player-number">{playerNames[index]}</div>
-                    </>
-                  ) : (
-                    <div className="empty-avatar">
-                      <div className="score-final-players"></div>
-                      <div className="player-number"></div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="container-game">
-            <div className="bg-light-effect"/>
-            <div className="bg-light"></div>
-            <div className="bg-logo"></div>
-            <div id="wrap">
-              {dice.map((number, index ) => (
-                <button className="die" key={index} onClick={() => handleSaveDice(number)}>
-                  <div className="die-inner" data-roll={number}>
-                    <div className="die-side"></div>
-                    <div className="die-side"></div>
-                    <div className="die-side"></div>
-                    <div className="die-side"></div>
-                    <div className="die-side"></div>
-                    <div className="die-side"></div>
+        <Suspense fallback={<LoadingGreed />}>
+          <div className="game">
+            <div className="container-panel">
+              <div className="screen-dice">
+                <div className="save-score">{activePlayerScore}</div>
+                <div className="dice-panel">
+                  <div className="inner-div-panel">
+                    {dice.map((number, index ) => (
+                      <button className="die-sm" key={index} onClick={() => handleSaveDice(number)}>
+                        <div className="die-sm-quick" data-roll={number}>
+                          <div className="die-sm-side"></div>
+                          <div className="die-sm-side"></div>
+                          <div className="die-sm-side"></div>
+                          <div className="die-sm-side"></div>
+                          <div className="die-sm-side"></div>
+                          <div className="die-sm-side"></div>
+                        </div>
+                        {/* <span className="shadow-dice"/> */}
+                      </button>
+                    ))}
                   </div>
-                  <span className="shadow-dice"/>
-                </button>
-              ))}
-            </div>
-            <div className="score-activ-player">            
-              <div className="text-activ-player-score">
-              Joueur {playerNames[currentPlayerIndex]} | Score : {playerScores[currentPlayerIndex]}
+                  <div className="inner-div-panel">
+                    {savedDice.map((number, index ) => (
+                      <button className="die-sm" key={index} onClick={() => handleReturnToDice(number)}>
+                        <div className="die-sm-quick" data-roll={number}>
+                          <div className="die-sm-side"></div>
+                          <div className="die-sm-side"></div>
+                          <div className="die-sm-side"></div>
+                          <div className="die-sm-side"></div>
+                          <div className="die-sm-side"></div>
+                          <div className="die-sm-side"></div>
+                        </div>
+                        {/* <span className="shadow-dice"/> */}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="final-score">{result}</div>
+              </div>
+              <div className="player-panel">
+                {[...Array(4)].map((_, index) => (
+                  <div key={index} className="players-screen">
+                    {playerNames[index] ? (
+                      <>
+                      <div
+                        className="players-screen"
+                        style={{
+                          backgroundImage: `url(${process.env.PUBLIC_URL}/player_avatar-${index}.png)`
+                        }}
+                      ></div>
+                      <div className="score-final-players">{playerScores[index]}</div>
+                      <div className="player-number">{playerNames[index]}</div>
+                      </>
+                    ) : (
+                      <div className="empty-avatar">
+                        <div className="score-final-players"></div>
+                        <div className="player-number"></div>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
-            {showSaveButton && (
-                <button className="btn-save-dice" onClick={handleSaveScore} >
-                <p>Sauvegarder dés</p>
+            <div className="container-game">
+              <div className="bg-light-effect"/>
+              <div className="bg-light"></div>
+              <div className="bg-logo"></div>
+              <div id="wrap">
+                {dice.map((number, index ) => (
+                  <button className="die" key={index} onClick={() => handleSaveDice(number)}>
+                    <div className="die-inner" data-roll={number}>
+                      <div className="die-side"></div>
+                      <div className="die-side"></div>
+                      <div className="die-side"></div>
+                      <div className="die-side"></div>
+                      <div className="die-side"></div>
+                      <div className="die-side"></div>
+                    </div>
+                    <span className="shadow-dice"/>
+                  </button>
+                ))}
+              </div>
+              <div className="score-activ-player">            
+                <div className="text-activ-player-score">
+                Joueur {playerNames[currentPlayerIndex]} | Score : {playerScores[currentPlayerIndex]}
+                </div>
+              </div>
+              {showSaveButton && (
+                  <button className="btn-save-dice" onClick={handleSaveScore} >
+                  <p>Sauvegarder dés</p>
+                  <span className="btn-end-turn-img1" />
+                </button>
+              )}
+              <button className="btn-end-turn" onClick={handleNextPlayer}>
+                <p>Suivant</p>
                 <span className="btn-end-turn-img1" />
               </button>
-            )}
-            <button className="btn-end-turn" onClick={handleNextPlayer}>
-              <p>Suivant</p>
-              <span className="btn-end-turn-img1" />
-            </button>
-            <button className="btn-roll-dice" onClick={handleRollDice}>
-              <p>Lancer les dés</p>
-              <span className="btn-roll-dice-img" />
-            </button>
+              <button className="btn-roll-dice" onClick={handleRollDice}>
+                <p>Lancer les dés</p>
+                <span className="btn-roll-dice-img" />
+              </button>
+            </div>
           </div>
-        </div>
+        </Suspense>
       )}
     <div id="greedRules">
       <h2>Règles du jeu deu 10</h2>
