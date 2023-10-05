@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { getRandomDiceRoll } from "../../utils/diceRoll6";
 import "./greed-dice.scss"
-import avatar1 from '../../../public/player_avatar-1.png';
-import avatar2 from '../../../public/player_avatar-2.png';
-import avatar3 from '../../../public/player_avatar-3.png';
-import avatar4 from '../../../public/player_avatar-4.png';
 
 function Greed() {
   const [dice, setDice] = useState<number[]>([])
@@ -70,6 +66,7 @@ function Greed() {
     setCurrentPlayerIndex((prevIndex) => (prevIndex + 1) % numPlayers);
     setShowSaveButton(false);
     setActivePlayerScore(0);
+    setHasSavedDiceThisTurn(true);
     checkWin();
   };
 
@@ -141,8 +138,10 @@ function Greed() {
         console.log('result', result)
         if (result === 0) {
           // Game Over
-          alert("Echec ! Dommage vous y étiez presque")
-          setActivePlayerScore(0)
+          setTimeout(() => {
+            alert("Echec ! Dommage vous y étiez presque");
+            setActivePlayerScore(0);
+          }, 1000);
           shouldResetDiceAndScore= true
         }
         setDice(newDice)
@@ -290,9 +289,7 @@ function Greed() {
                   ))}
                 </div>
               </div>
-              {showSaveButton && (
-                <button onClick={handleSaveScore} className="btn-save-dice">Mettre de côté</button>
-                )}
+              <div className="final-score">{result}</div>
             </div>
             <div className="player-panel">
               {[...Array(4)].map((_, index) => (
@@ -319,7 +316,9 @@ function Greed() {
             </div>
           </div>
           <div className="container-game">
+            <div className="bg-light-effect"/>
             <div className="bg-light"></div>
+            <div className="bg-logo"></div>
             <div id="wrap">
               {dice.map((number, index ) => (
                 <button className="die" key={index} onClick={() => handleSaveDice(number)}>
@@ -331,6 +330,7 @@ function Greed() {
                     <div className="die-side"></div>
                     <div className="die-side"></div>
                   </div>
+                  <span className="shadow-dice"/>
                 </button>
               ))}
             </div>
@@ -339,9 +339,20 @@ function Greed() {
               Joueur {playerNames[currentPlayerIndex]} | Score : {playerScores[currentPlayerIndex]}
               </div>
             </div>
-            <div className="final-score"><span>{result}</span></div>
-            <button className="btn-end-turn" onClick={handleNextPlayer} >Finir mon tour</button>
-            <button className="btn-roll-dice" onClick={handleRollDice}>Lancer les dés</button>
+            {showSaveButton && (
+                <button className="btn-save-dice" onClick={handleSaveScore} >
+                <p>Sauvegarder dés</p>
+                <span className="btn-end-turn-img1" />
+              </button>
+            )}
+            <button className="btn-end-turn" onClick={handleNextPlayer}>
+              <p>Suivant</p>
+              <span className="btn-end-turn-img1" />
+            </button>
+            <button className="btn-roll-dice" onClick={handleRollDice}>
+              <p>Lancer les dés</p>
+              <span className="btn-roll-dice-img" />
+            </button>
           </div>
         </div>
       )}
