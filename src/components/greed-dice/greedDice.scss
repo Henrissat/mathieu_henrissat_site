@@ -40,6 +40,9 @@
   bottom: 15px;
   font-size: 1.2rem;
   color: white;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
 }
 
 .dice-panel{
@@ -51,8 +54,8 @@
   display: flex;
   width: 80px;
   flex-direction: column;
-  padding-left: 3rem;
-  margin: 10px 0;
+  padding-left: 2.7rem;
+  margin: 20px 0;
   text-align: center;
 }
 
@@ -60,22 +63,26 @@
   margin: 0px 0;
 }
 
-.btn-save-dice {
+.btn{
   display: flex;
   justify-content: center;
   align-items: center;
   position: absolute;
-  width: 230px;
-  height: 54px;
-  left: 23%;
-  bottom: 20px;
-  padding-bottom: 11px;
   background-color: transparent;
   border: none;
   cursor: pointer;
   font-size: 1.2rem;
   color: #ffffff;
   overflow: hidden;
+}
+
+.btn-save-dice {
+  width: 230px;
+  height: 54px;
+  left: 23%;
+  bottom: 20px;
+  padding-bottom: 11px;
+  font-size: 1.2rem;
   background-image: url('../../../public/btn-next-player-on.png');
   transition: background-image 0.5s ease-in-out;
 
@@ -104,6 +111,76 @@
 .btn-save-dice:hover {
   color: #07233d;
 }
+
+.btn-end-turn {
+  width: 230px;
+  height: 54px;
+  left: 60%;
+  bottom: 20px;
+  padding-bottom: 11px;
+  background-image: url('../../../public/btn-next-player-on.png');
+  transition: background-image 0.5s ease-in-out;
+
+  p {
+    z-index: 5;
+    transition: color 0.3s ease-in-out; 
+  }
+
+  span {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    border: none;
+  }
+}
+
+.btn-end-turn:hover .btn-end-turn-img1 {
+  margin-top: 10px;
+  background-image: url('../../../public/btn-next-player-off.png');
+  opacity: 1;
+  border: none;
+}
+
+.btn-end-turn:hover {
+  color: #07233d;
+}
+
+.btn-roll-dice {
+  width: 340px;
+  height: 120px;
+  left: 37%;
+  bottom: 0;
+  font-size: 1.3rem;
+  font-weight: 900;
+  background-image: url('../../../public/roll-dice-on.png');
+  z-index: 6;
+
+  p{
+    z-index: 10;
+    transition: color 0.3s ease-in-out;
+  }
+  span {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    border: none;
+  }
+}
+
+.btn-roll-dice:hover .btn-roll-dice-img {
+  background-image: url('../../../public/roll-dice.png');
+  opacity: 1;
+  border: none;
+}
+
+.btn-roll-dice:hover {
+  color: #07233d;
+}
+
 
 .screen-dice{
   position: relative;
@@ -163,50 +240,6 @@
   padding-top: 5px;
 }
 
-.btn-end-turn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  width: 230px;
-  height: 54px;
-  left: 60%;
-  bottom: 20px;
-  padding-bottom: 11px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-  color: #ffffff;
-  overflow: hidden;
-  background-image: url('../../../public/btn-next-player-on.png');
-  transition: background-image 0.5s ease-in-out;
-
-  p {
-    z-index: 5;
-    transition: color 0.3s ease-in-out; 
-  }
-
-  span {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-    border: none;
-  }
-}
-
-.btn-end-turn:hover .btn-end-turn-img1 {
-  margin-top: 10px;
-  background-image: url('../../../public/btn-next-player-off.png');
-  opacity: 1;
-  border: none;
-}
-
-.btn-end-turn:hover {
-  color: #07233d;
-}
 
 
 .player-panel{
@@ -258,49 +291,6 @@
   font-weight: 900;
 }
 
-.btn-roll-dice {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  width: 340px;
-  height: 120px;
-  left: 37%;
-  bottom: 0;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 1.3rem;
-  font-weight: 900;
-  color: white;
-  overflow: hidden;
-  background-image: url('../../../public/roll-dice-on.png');
-  z-index: 6;
-
-  p{
-    z-index: 10;
-    transition: color 0.3s ease-in-out;
-  }
-  span {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-    border: none;
-  }
-}
-
-.btn-roll-dice:hover .btn-roll-dice-img {
-  background-image: url('../../../public/roll-dice.png');
-  opacity: 1;
-  border: none;
-}
-
-.btn-roll-dice:hover {
-  color: #07233d;
-}
-
 .bg-logo{
   position: absolute;
   width: 100%;
@@ -318,6 +308,15 @@
   background-image: url('../../../public/lueur.png') ;
   background-size: cover;
   background-repeat: no-repeat;
+  animation-duration: 5s;
+  animation-name: clignoter;
+  animation-iteration-count: infinite;
+  transition: none;
+}
+@keyframes clignoter {
+  0%   { opacity:1; }
+  40%   {opacity:0.4; }
+  100% { opacity:1; }
 }
 
 #wrap {
@@ -332,7 +331,7 @@ $dieSizeSm: 33px;
 
 .die-sm {
   display: inline-block;
-  margin: 13px;
+  margin: 15px;
   position: relative;
   height: $dieSizeSm;
   width: $dieSizeSm;
@@ -474,7 +473,7 @@ $dieSize: 100px;
   &-side {
     background-color: #eee;
     border: 1px solid #ddd;
-    box-shadow: inset 10px -10px 40px -10px #ccc, inset -10px 10px 40px -10px #ccc, inset -5px 5px 20px 10px #fff, inset 5px -5px 20px 10px #fff;
+    box-shadow: inset 10px -10px 40px -10px #ccc, inset -10px 10px 40px -10px #ccc, inset -5px 5px 20px 10px #fff, inset 5px -5px 20px 10px rgb(184, 184, 184);
     box-sizing: border-box;
     display: block;
     margin: 0;
@@ -545,7 +544,21 @@ $dieSize: 100px;
   z-index: 20;
 }
 
+.mobile-btn{
+  display: none;
+}
+
 @media screen and (max-width: 768px) {
+  .mobile-btn{
+    position: absolute;
+    display: initial;
+    left:-5px;
+    bottom: -100px;
+  }
+  
+  .game{
+    grid-template-columns: 1fr;
+  }
   .die {
     display: none;
     &:first-child {
@@ -553,4 +566,46 @@ $dieSize: 100px;
       margin: 0 auto;
     }
   }
+
+  .container-game{
+    display: none;
+  }
+
+  .container-panel{
+    width: 100%;
+    background-size: cover;
+  }
+
+  .screen-dice{
+    z-index: 1;
+  }
+
+  .player-panel{
+    bottom: 5px;
+    z-index: 50;
+  }
+  .player-number{
+    bottom: -5px;
+  }
+  .score-final-players{
+    top:-10px
+  }
+
+  .btn-end-turn{
+    left: 145px;
+  }
+  .btn-save-dice{
+    left: -25px;
+  }
+
+  .bg-logo-mobile{
+    background-image: url('../../../public/bg-logo.png');
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.5;
+  }
+  
 }

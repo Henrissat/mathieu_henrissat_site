@@ -112,7 +112,7 @@ function Greed() {
     } else {
       if(dice.length === 0) {
         const newDice = []
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 5; i++) {
           newDice.push(getRandomDiceRoll())
         }
         // Mettre à jour les dés
@@ -161,7 +161,7 @@ function Greed() {
 
   // Fonction pour calculer le score en utilisant les chiffres sauvegardés
   const calculateFinalScore = (dice: number[]) => {
-    const counts = [0, 0, 0, 0, 0, 0]
+    const counts = [0, 0, 0, 0, 0]
     let totalScore = 0
   
     for (const value of dice) {
@@ -176,10 +176,10 @@ function Greed() {
 
     
     const isStraight = () => {
-      if (sortedDice.length !== 5) {
+      if (sortedDice.length !== 4) {
         return false;
       } else {
-        return sortedDice[4] - sortedDice[0] === 4;
+        return sortedDice[3] - sortedDice[0] === 3;
       }
     };
 
@@ -304,7 +304,23 @@ function Greed() {
                     ))}
                   </div>
                 </div>
-                <div className="final-score">{result}</div>
+                <button className="final-score" onClick={handleSaveScore}>{result}</button>
+              <div className="mobile-btn">
+                {showSaveButton && (
+                    <button className="btn btn-save-dice" onClick={handleSaveScore} >
+                    <p>Sauvegarder dés</p>
+                    <span className="btn-end-turn-img1" />
+                  </button>
+                )}
+                <button className="btn btn-end-turn" onClick={handleNextPlayer}>
+                  <p>Suivant</p>
+                  <span className="btn-end-turn-img1" />
+                </button>
+                <button className="btn btn-roll-dice" onClick={handleRollDice}>
+                  <p>Lancer les dés</p>
+                  <span className="btn-roll-dice-img" />
+                </button>
+              </div>
               </div>
               <div className="player-panel">
                 {[...Array(4)].map((_, index) => (
@@ -329,6 +345,7 @@ function Greed() {
                   </div>
                 ))}
               </div>
+              <div className="bg-logo-mobile"></div>
             </div>
             <div className="container-game">
               <div className="bg-light-effect"/>
@@ -355,16 +372,16 @@ function Greed() {
                 </div>
               </div>
               {showSaveButton && (
-                  <button className="btn-save-dice" onClick={handleSaveScore} >
+                  <button className="btn btn-save-dice" onClick={handleSaveScore} >
                   <p>Sauvegarder dés</p>
                   <span className="btn-end-turn-img1" />
                 </button>
               )}
-              <button className="btn-end-turn" onClick={handleNextPlayer}>
+              <button className="btn btn-end-turn" onClick={handleNextPlayer}>
                 <p>Suivant</p>
                 <span className="btn-end-turn-img1" />
               </button>
-              <button className="btn-roll-dice" onClick={handleRollDice}>
+              <button className="btn btn-roll-dice" onClick={handleRollDice}>
                 <p>Lancer les dés</p>
                 <span className="btn-roll-dice-img" />
               </button>
