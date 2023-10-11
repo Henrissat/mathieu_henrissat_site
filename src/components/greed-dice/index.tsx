@@ -1,10 +1,12 @@
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { getRandomDiceRoll } from "../../utils/diceRoll6";
 import "./greedDice.scss";
 import LoadingGreed from "./loaderGreed";
+import RulesModale from "./rulesModale";
 
 
 function Greed() {
+  const [introSoundPlayed, setIntroSoundPlayed] = useState(false);
   const [dice, setDice] = useState<number[]>([])
   const [savedDice, setSavedDice] = useState<number[]>([])
   const [showSaveButton, setShowSaveButton] = useState<boolean>(false)
@@ -21,6 +23,7 @@ function Greed() {
   const [firstTurn, setFirstTurn] = useState<boolean>(true)
   const [hasSavedDiceThisTurn, setHasSavedDiceThisTurn] = useState<boolean>(false)
 
+
   const checkWin = () => {
     if(activePlayerScore >= 10000){
       setGameOver(true);
@@ -31,7 +34,7 @@ function Greed() {
   console.log("numPlayers", numPlayers)
   // Gestionnaire de clic pour commencer la partie avec le nombre de joueurs choisi
   const handleStartGame = () => {
-    setDice([]);
+    setDice([1,2,3,4,5]);
     setSavedDice([]);
     setShowSaveButton(false);
     setCurrentPlayerIndex(0);
@@ -62,7 +65,7 @@ function Greed() {
       alert("Vous devez atteindre au moins 1000 points pour commencer à comptabiliser vos points.");
     }
     
-    setDice([]);
+    setDice([1,2,3,4,5]);
     setSavedDice([]);
     setCurrentPlayerIndex((prevIndex) => (prevIndex + 1) % numPlayers);
     setShowSaveButton(false);
@@ -105,11 +108,14 @@ function Greed() {
   // Gestionnaire de clic pour ajouter 6 lancers de dé au tableau
   const handleRollDice = () => {
     let shouldResetDiceAndScore = false
+    const audioRollDice = new Audio('https://res.cloudinary.com/doe4mucdz/video/upload/v1697016359/roll_yhf47d.wav');
+    audioRollDice.play();
 
     // Vérifier si le joueur a sauvegardé au moins un dé ce tour
     if (!hasSavedDiceThisTurn && !firstTurn) {
       alert("Vous devez sauvegarder au moins un dé avant de lancer les dés.");
     } else {
+              setShowSaveButton(true)
       if(dice.length === 0) {
         const newDice = []
         for (let i = 0; i < 5; i++) {
@@ -126,7 +132,6 @@ function Greed() {
           setActivePlayerScore(0);
           shouldResetDiceAndScore= true
         } 
-        setShowSaveButton(true)
         setHasSavedDiceThisTurn(false)
         setFirstTurn(false);
       }else {
@@ -140,7 +145,7 @@ function Greed() {
         if (result === 0) {
           // Game Over
           setTimeout(() => {
-            alert("Echec ! Dommage vous y étiez presque");
+            alert("Aucun bon dés ! Dommage vous y étiez presque");
             setActivePlayerScore(0);
           }, 1000);
           shouldResetDiceAndScore= true
@@ -242,7 +247,12 @@ function Greed() {
   };
   
   // Calculer le score du lancer de dés
-  const result = calculateFinalScore(dice);
+  let result = 0; // Initialiser result à 0 par défaut
+
+  if (!firstTurn) {
+    result = calculateFinalScore(dice);
+  }
+
 
   // Fonction pour sauvegarder le score du joueur actif
   const handleSaveScore = () => {
@@ -253,21 +263,55 @@ function Greed() {
     setActivePlayerScore(scoreToAddLater);
   };
 
+
+  const [showRules, setShowRules] = useState(false);
+
+  const openRules = () => {
+    setShowRules(true);
+  };
+
+  const closeRules = () => {
+    setShowRules(false);
+  };
+
+  const playSoundOnMouseEnter = () => {
+    if (!introSoundPlayed) {
+      const audio = new Audio('https://res.cloudinary.com/doe4mucdz/video/upload/v1697016041/epic-logo-6215_f8vltv.mp3');
+      audio.play();
+      setIntroSoundPlayed(true);
+    }
+  };
+
   return (
-    <div>
+    <Suspense fallback={<LoadingGreed />}>
       {!gameStarted && (
-        <div>
-          <p>Choisissez le nombre de joueurs :</p>
-          <select onChange={(e) => setNumPlayers(parseInt(e.target.value))}>
-            <option value={2}>2 joueurs</option>
-            <option value={3}>3 joueurs</option>
-            <option value={4}>4 joueurs</option>
-          </select>
-          <button onClick={handleStartGame}>Commencer à jouer</button>
+        <div className="container-home-greed" onMouseEnter={playSoundOnMouseEnter}>
+          <div className="box-left">
+            <div className="container-box-left">
+              <div className="box-left-img"/>
+              <div className="box-left-shadow"/>
+            </div>
+          </div>
+          <div className="box-right">
+            <div className="container-box-right">
+              <div className="box-right-img"/>
+              <div className="box-right-shadow"/>
+            </div>
+          </div>
+          <div className="home-greed">
+            <div className="board-begin">
+              <p>Choisissez le nombre de joueurs :</p>
+              <select onChange={(e) => setNumPlayers(parseInt(e.target.value))}>
+                <option value={2}>2 joueurs</option>
+                <option value={3}>3 joueurs</option>
+                <option value={4}>4 joueurs</option>
+              </select>
+              <button onClick={handleStartGame}>Commencer à jouer</button>
+            </div>
+          </div>
         </div>
       )}
       {gameStarted && (
-        <Suspense fallback={<LoadingGreed />}>
           <div className="game">
             <div className="container-panel">
               <div className="screen-dice">
@@ -309,7 +353,7 @@ function Greed() {
                 {showSaveButton && (
                     <button className="btn btn-save-dice" onClick={handleSaveScore} >
                     <p>Sauvegarder dés</p>
-                    <span className="btn-end-turn-img1" />
+                    <span className="btn-save-dice-img1"/>
                   </button>
                 )}
                 <button className="btn btn-end-turn" onClick={handleNextPlayer}>
@@ -374,7 +418,7 @@ function Greed() {
               {showSaveButton && (
                   <button className="btn btn-save-dice" onClick={handleSaveScore} >
                   <p>Sauvegarder dés</p>
-                  <span className="btn-end-turn-img1" />
+                  <span className="btn-save-dice-img1" />
                 </button>
               )}
               <button className="btn btn-end-turn" onClick={handleNextPlayer}>
@@ -386,51 +430,15 @@ function Greed() {
                 <span className="btn-roll-dice-img" />
               </button>
             </div>
-          </div>
-        </Suspense>
-      )}
-    <div id="greedRules">
-      <h2>Règles du jeu deu 10</h2>
-      <h3>But du jeu :</h3>
-      <p>Atteindre un score de 10 000 points.</p>
-      <h2>Déroulement du jeu :</h2>
-      <p>Les joueurs jouent les uns après les autres.</p>
-      <h3>Description d'un tour de jeu :</h3>
-      <ol>
-        <li>Jeter les 5 dés.</li>
-        <li>Mettre de côté le ou les dés permettant de gagner des points et toujours au minimum un dés</li>
-        <li>Si on le souhaite arrêter, laisser la main au joueur suivant et additionner le score obtenu lors du tour aux points déjà acquis lors des autres tours.</li>
-        <li>Ou si on préfère lancer les dés non utilisés dans l'espoir de faire grimper le score obtenu lors du tour.</li>
-        <li>Si l'un des jets de dés ne rapporte rien, le score du tour du jeu est nul, et c'est au joueur suivant de lancer les 5 dés.</li>
-      </ol>
-      <h3>Comptage des points :</h3>
-      <ul>
-        <li>Un As : 100 pts</li>
-        <li>Un 5 : 50 pts</li>
-        <li>Brelan d'As : 1000 pts</li>
-        <li>Brelan de 5 : 500 pts</li>
-        <li>Brelan de 2, 3, 4, 6 : 200, 300, 400, 600 pts</li>
-        <li>Carré de 2, 3, 4, 6 : 200*2, 300*2, 400*2, 600*2 pts</li>
-        <li>5 dés identique de 2, 3, 4, 6 : 200*4, 300*4, 400*4, 600*4 pts</li>
-        <li>6 dés identique de 2, 3, 4, 6 : 200*6, 300*6, 400*6, 600*6 pts</li>
-        <li>Suite : 1, 2, 3, 4, 5 ou 2, 3, 4, 5, 6 : 1000 pts</li>
-      </ul>
-      <h4>Remarque 1 :</h4>
-      <p>Pour être valides, les brelans ou suites doivent être produits sur un seul jeté de dé. Exemple :</p>
-      <ol>
-        <li>On obtient 1, 3, 4, 4, 6 au premier lancé : Seul le 1 permet d'augmenter le score du tour (+100 pts). On le garde et on relance les autres dés.</li>
-        <li>On obtient 5, 3, 3, 4 : Seul le 5 permet d'augmenter le score du tour (+50 pts, soit 150 au total). On le garde et on relance les autres dés.</li>
-        <li>On obtient 2, 3, 4 : Rien ne permet de marquer avec ces 3 dés (même si les 5 dés constituent une suite), les 150 points sont perdus.</li>
-      </ol>
-      <h4>Remarque 2 :</h4>
-      <p>Lorsque les 5 dés ont permis de marquer, ils peuvent tous être relancés en vue d'améliorer le score du tour (au risque de le perdre entièrement).</p>
-      <h4>Remarque 3 :</h4>
-      <p>Il faut totaliser 1000 points avant de pouvoir commencer à comptabiliser ses points.</p>
+            <div className="greedRules">
+              <button onClick={openRules}>Afficher les règles</button>
 
-    </div>
-  </div>
+              {showRules && <RulesModale onClose={closeRules} />}
+            </div>
+          </div>
+      )}
+  </Suspense>
   );
 }
 
 export default Greed;
-
