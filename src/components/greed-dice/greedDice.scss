@@ -687,6 +687,28 @@ $dieSize: 100px;
 }
 
 
+.btn-rules {
+  width: 62px;
+  height: 62px;
+  margin: 10px 0 0 0 ;
+  background-image: url('../../../public/btn-info-on.png');
+
+  span {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    border: none;
+  }
+}
+
+.btn-rules:hover .btn-rules-img1 {
+  background-image: url('../../../public/btn-info-off.png');
+  opacity: 1;
+  border: none;
+}
+
 /////    -- MOBILE --     //////
 
 @media screen and (max-width: 768px) {

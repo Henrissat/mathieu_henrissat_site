@@ -51,6 +51,8 @@ function Greed() {
 
   // Gestionnaire de clic pour passer au joueur suivant
   const handleNextPlayer = () => {
+    const audioNext = new Audio('https://res.cloudinary.com/doe4mucdz/video/upload/v1697036160/pick_alqnjk.mp3');
+    audioNext.play();
     if (activePlayerScore >= 1000 || playerScores[currentPlayerIndex] >= 1000) {
       if (activePlayerScore  === 0) {
         setActivePlayerScore(0);
@@ -76,6 +78,8 @@ function Greed() {
 
   // Gestionnaire de clic pour sauvegarder un chiffre
   const handleSaveDice = (number: number) => {
+    const audioRollDice = new Audio('https://res.cloudinary.com/doe4mucdz/video/upload/v1697036609/dice-save_fg57ip.mp3');
+    audioRollDice.play();
     setSavedDice([...savedDice, number]);
     // Trouver et retirer la première occurrence du chiffre de dice
     const index = dice.indexOf(number);
@@ -89,6 +93,8 @@ function Greed() {
 
   // Gestionnaire de clic pour faire revenir un chiffre dans dice
   const handleReturnToDice = (number: number) => {
+    const audioRollDice = new Audio('https://res.cloudinary.com/doe4mucdz/video/upload/v1697036609/dice-save_fg57ip.mp3');
+    audioRollDice.play();
     setDice([...dice, number]);
     // Trouver et retirer le chiffre de savedNumbers
     const index = savedDice.indexOf(number);
@@ -115,7 +121,7 @@ function Greed() {
     if (!hasSavedDiceThisTurn && !firstTurn) {
       alert("Vous devez sauvegarder au moins un dé avant de lancer les dés.");
     } else {
-              setShowSaveButton(true)
+      setShowSaveButton(true)
       if(dice.length === 0) {
         const newDice = []
         for (let i = 0; i < 5; i++) {
@@ -256,8 +262,11 @@ function Greed() {
 
   // Fonction pour sauvegarder le score du joueur actif
   const handleSaveScore = () => {
+    const audioSave = new Audio('https://res.cloudinary.com/doe4mucdz/video/upload/v1697036156/save_wylwea.mp3')
+    audioSave.volume = 0.2
+    audioSave.play()
     const calculatedFinalScore = calculateFinalScore(savedDice);
-    setSavedDice([]);
+    setSavedDice([])
     
     const scoreToAddLater = activePlayerScore + calculatedFinalScore;
     setActivePlayerScore(scoreToAddLater);
@@ -267,7 +276,7 @@ function Greed() {
   const [showRules, setShowRules] = useState(false);
 
   const openRules = () => {
-    setShowRules(true);
+    setShowRules(true)
   };
 
   const closeRules = () => {
@@ -410,6 +419,9 @@ function Greed() {
                   </button>
                 ))}
               </div>
+              <button className="btn btn-rules" onClick={openRules} >
+                <span className="btn-rules-img1" />
+              </button>
               <div className="score-activ-player">            
                 <div className="text-activ-player-score">
                 Joueur {playerNames[currentPlayerIndex]} | Score : {playerScores[currentPlayerIndex]}
@@ -431,8 +443,6 @@ function Greed() {
               </button>
             </div>
             <div className="greedRules">
-              <button onClick={openRules}>Afficher les règles</button>
-
               {showRules && <RulesModale onClose={closeRules} />}
             </div>
           </div>
